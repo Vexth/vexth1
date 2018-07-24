@@ -1,9 +1,6 @@
 package main
 
 import (
-	"fmt"
-	"net/http"
-
 	"github.com/vexth1/handler"
 	"github.com/vexth1/middleware"
 
@@ -17,7 +14,7 @@ func main() {
 	ep.AttachMiddleware(middleware.NegroniRecoverHandler())
 	ep.AttachMiddleware(middleware.NegroniLoggerHandler())
 	ep.AttachMiddleware(middleware.NegroniCorsAllowAll())
-	ep.AttachMiddleware(middleware.NegroniJwtHandler(content.PrivateTokenKey, skipper, nil, jwtErrHandler))
+	ep.AttachMiddleware(middleware.NegroniJwtHandler(content.PrivateTokenKey, content.Skipper, nil, content.JwtErrHandler))
 
 	router := handler.NewRouter()
 	router.Get("/", content.Hello)
@@ -28,16 +25,4 @@ func main() {
 	ep.Start(router.Handler())
 
 	ep.Run()
-}
-
-func skipper(path string) bool {
-	if path == "/skipper" {
-		return true
-	}
-	return false
-}
-
-func jwtErrHandler(w http.ResponseWriter, r *http.Request, err string) {
-	fmt.Println(err)
-	http.Error(w, err, 401)
 }

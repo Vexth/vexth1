@@ -11,11 +11,12 @@ import (
 
 const PrivateTokenKey = "123your_token_key"
 
+// Token 对象
 type Token struct {
 	Token string
 }
 
-// 获取token值
+// GetToken 获取token值
 func GetToken(ctx *handler.Context) error {
 	res := ctx.Response()
 	res.WriteHeader(http.StatusOK)
@@ -35,4 +36,18 @@ func GetToken(ctx *handler.Context) error {
 	res.Write(json)
 
 	return nil
+}
+
+// Skipper 过滤一些不需要token验证的接口
+func Skipper(path string) bool {
+	if path == "/skipper" {
+		return true
+	}
+	return false
+}
+
+// JwtErrHandler 返回是否带有token或者token失效的信息
+func JwtErrHandler(w http.ResponseWriter, r *http.Request, err string) {
+	fmt.Println(err)
+	http.Error(w, err, 401)
 }
